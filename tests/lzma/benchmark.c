@@ -66,7 +66,7 @@ void __attribute__ ((noinline)) doit(char *buffer, int size, int i) {
   if (!buffer2) buffer2 = (char*)malloc(maxCompressedSize);
   if (!buffer3) buffer3 = (char*)malloc(size);
 
-  int64_t compressedSize = lzbench_lzma_compress(buffer, size, buffer2, maxCompressedSize, 7 /*level*/, 0, NULL);
+  int64_t compressedSize = lzbench_lzma_compress(buffer, size, buffer2, maxCompressedSize, 4 /*level*/, 0, NULL);
 
   if (i == 0) printf("sizes: %d,%d\n", size, (int32_t)compressedSize);
 
