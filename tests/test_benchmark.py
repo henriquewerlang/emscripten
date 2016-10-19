@@ -10,7 +10,7 @@ from tools.shared import *
 # 3: 1 second
 # 4: 5 seconds
 # 5: 10 seconds
-DEFAULT_ARG = '2'
+DEFAULT_ARG = '4'
 
 TEST_REPS = 3
 
@@ -68,11 +68,12 @@ class NativeBenchmarker(Benchmarker):
     if lib_builder: native_args = native_args + lib_builder(self.name, native=True, env_init={ 'CC': self.cc, 'CXX': self.cxx })
     if not native_exec:
       compiler = self.cxx if filename.endswith('cpp') else self.cc
-      process = Popen([compiler, '-fno-math-errno', filename, '-o', filename+'.native'] + self.args + shared_args + native_args, stdout=PIPE, stderr=parent.stderr_redirect)
+      cmd = [compiler, '-fno-math-errno', filename, '-o', filename+'.native'] + self.args + shared_args + native_args
+      process = Popen(cmd, stdout=PIPE, stderr=parent.stderr_redirect)
       output = process.communicate()
       if process.returncode is not 0:
-        print >> sys.stderr, "Building native executable with command failed"
-        print "Output: " + output[0]
+        print >> sys.stderr, "Building native executable with command failed", ' '.join(cmd)
+        print "Output: " + str(output[0]) + '\n' + str(output[1])
     else:
       shutil.copyfile(native_exec, filename + '.native')
       shutil.copymode(native_exec, filename + '.native')
@@ -132,10 +133,10 @@ process(sys.argv[1])
 try:
   benchmarkers_error = ''
   benchmarkers = [
-    #NativeBenchmarker('clang', CLANG_CC, CLANG),
+    NativeBenchmarker('clang', CLANG_CC, CLANG),
     #NativeBenchmarker('gcc', 'gcc', 'g++'),
     #JSBenchmarker('sm-asmjs-f32', SPIDERMONKEY_ENGINE, ['-s', 'PRECISE_F32=2']),
-    JSBenchmarker('sm-wasm', SPIDERMONKEY_ENGINE, ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
+    #JSBenchmarker('sm-wasm', SPIDERMONKEY_ENGINE, ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
     #JSBenchmarker('sm-asmjs-wasm', SPIDERMONKEY_ENGINE, ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="asmjs,native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
     #JSBenchmarker('v8-wasm', V8_ENGINE,           ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
   ]

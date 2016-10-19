@@ -81,11 +81,11 @@ int main(int argc, char **argv) {
   int arg = argc > 1 ? argv[1][0] - '0' : 3;
   switch(arg) {
     case 0: return 0; break;
-    case 1: size = 100000; iters = 60; break;
-    case 2: size = 100000; iters = 250; break;
-    case 3: size = 100000; iters = 500; break;
-    case 4: size = 100000; iters = 5*500; break;
-    case 5: size = 100000; iters = 10*500; break;
+    case 1: size = 100000; iters = 1; break;
+    case 2: size = 100000; iters = 10; break;
+    case 3: size = 100000; iters = 22; break;
+    case 4: size = 100000; iters = 125; break;
+    case 5: size = 100000; iters = 225; break;
     default: printf("error: %d\\n", arg); return -1;
   }
 

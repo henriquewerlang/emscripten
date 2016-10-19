@@ -2,10 +2,10 @@
 
 O = lzma
 OBJECTS = \
-  $(O)/Alloc.c \
-  $(O)/LzFind.c \
-  $(O)/LzmaDec.c \
-  $(O)/LzmaEnc.c
+  $(O)/Alloc.o \
+  $(O)/LzFind.o \
+  $(O)/LzmaDec.o \
+  $(O)/LzmaEnc.o
 
 all: lzma.a
 
@@ -13,7 +13,7 @@ all: lzma.a
 	$(CC) -I. $< -o $@ -O2 -c
 
 lzma.a: $(OBJECTS)
-	$(AR) rvs $@ $(OBJECTS)
+	$(AR) rv $@ $(OBJECTS)
 
 clean:
 	rm lzma.a
