@@ -497,6 +497,40 @@ class benchmark(RunnerCore):
     '''
     self.do_benchmark('corrections', src, 'final:')
 
+  def test_corrections64(self):
+    src = r'''
+      #include<stdio.h>
+      #include<math.h>
+      #include<stdint.h>
+      int main(int argc, char **argv) {
+        int64_t N, M;
+        int arg = argc > 1 ? argv[1][0] - '0' : 3;
+        switch(arg) {
+          case 0: return 0; break;
+          case 1: N = 10000; M = 550; break;
+          case 2: N = 10000; M = 3500; break;
+          case 3: N = 10000; M = 7000; break;
+          case 4: N = 10000; M = 5*7000; break;
+          case 5: N = 10000; M = 10*7000; break;
+          default: printf("error: %d\\n", arg); return -1;
+        }
+
+        uint64_t f = 0;
+        uint32_t s = 0;
+        for (int64_t t = 0; t < M; t++) {
+          for (int64_t i = 0; i < N; i++) {
+            f += i / ((t % 5)+1);
+            if (f > 1000) f /= (t % 3)+1;
+            if (i % 4 == 0) f += i * (i % 8 == 0 ? 1 : -1);
+            s += (short(f)*short(f)) % 256;
+          }
+        }
+        printf("final: %lld:%d.\n", f, s);
+        return 0;
+      }
+    '''
+    self.do_benchmark('corrections64', src, 'final:')
+
   def fasta(self, name, double_rep, emcc_args=[]):
     src = open(path_from_root('tests', 'fasta.cpp'), 'r').read().replace('double', double_rep)
     src = src.replace('   const size_t n = ( argc > 1 ) ? atoi( argv[1] ) : 512;', '''
