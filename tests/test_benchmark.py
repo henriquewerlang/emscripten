@@ -10,7 +10,7 @@ from tools.shared import *
 # 3: 1 second
 # 4: 5 seconds
 # 5: 10 seconds
-DEFAULT_ARG = '4'
+DEFAULT_ARG = '2'
 
 TEST_REPS = 3
 
@@ -122,7 +122,7 @@ process(sys.argv[1])
                     #'--profiling',
                     #'--closure', '1',
                     '-o', final] + shared_args + emcc_args + self.extra_args, stdout=PIPE, stderr=PIPE, env=self.env).communicate()
-    assert os.path.exists(final), 'Failed to compile file: ' + output[0]
+    assert os.path.exists(final), 'Failed to compile file: ' + output[0] + ' (looked for ' + final + ')'
     self.filename = final
 
   def run(self, args):
@@ -134,9 +134,10 @@ try:
   benchmarkers = [
     #NativeBenchmarker('clang', CLANG_CC, CLANG),
     #NativeBenchmarker('gcc', 'gcc', 'g++'),
-    JSBenchmarker('sm-asmjs-f32', SPIDERMONKEY_ENGINE, ['-s', 'PRECISE_F32=2']),
+    #JSBenchmarker('sm-asmjs-f32', SPIDERMONKEY_ENGINE, ['-s', 'PRECISE_F32=2']),
     JSBenchmarker('sm-wasm', SPIDERMONKEY_ENGINE, ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
-    JSBenchmarker('v8-wasm', V8_ENGINE,           ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
+    #JSBenchmarker('sm-asmjs-wasm', SPIDERMONKEY_ENGINE, ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="asmjs,native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
+    #JSBenchmarker('v8-wasm', V8_ENGINE,           ['-s', 'BINARYEN=1', '-s', 'BINARYEN_METHOD="native-wasm"', '-s', 'BINARYEN_IMPRECISE=1']),
   ]
 except Exception, e:
   benchmarkers_error = str(e)
@@ -440,7 +441,7 @@ class benchmark(RunnerCore):
         return x;
       }
     '''
-    self.do_benchmark('conditionals', src, 'ok', reps=TEST_REPS*5)
+    self.do_benchmark('conditionals', src, 'ok', reps=TEST_REPS)
 
   def test_fannkuch(self):
     src = open(path_from_root('tests', 'fannkuch.cpp'), 'r').read().replace(
@@ -601,4 +602,10 @@ class benchmark(RunnerCore):
 
     self.do_benchmark('bullet', src, '\nok.\n', emcc_args=emcc_args, shared_args=['-I' + path_from_root('tests', 'bullet', 'src'),
                                 '-I' + path_from_root('tests', 'bullet', 'Demos', 'Benchmarks')], lib_builder=lib_builder)
+
+  def test_zzz_lzma(self):
+    src = open(path_from_root('tests', 'lzma', 'benchmark.c'), 'r').read()
+    def lib_builder(name, native, env_init):
+      return self.get_library('lzma', [os.path.join('lzma.a')], configure=None, native=native, cache_name_extra=name, env_init=env_init)
+    self.do_benchmark('lzma', src, 'ok.', shared_args=['-I' + path_from_root('tests', 'lzma')], lib_builder=lib_builder)
 
