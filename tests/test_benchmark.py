@@ -507,11 +507,11 @@ class benchmark(RunnerCore):
         int arg = argc > 1 ? argv[1][0] - '0' : 3;
         switch(arg) {
           case 0: return 0; break;
-          case 1: N = 10000; M = 550; break;
-          case 2: N = 10000; M = 3500; break;
-          case 3: N = 10000; M = 7000; break;
-          case 4: N = 10000; M = 5*7000; break;
-          case 5: N = 10000; M = 10*7000; break;
+          case 1: N = 8000; M = 550; break;
+          case 2: N = 8000; M = 3500; break;
+          case 3: N = 8000; M = 7000; break;
+          case 4: N = 8000; M = 5*7000; break;
+          case 5: N = 8000; M = 10*7000; break;
           default: printf("error: %d\\n", arg); return -1;
         }
 
